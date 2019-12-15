@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	us "hw_2_unpack_string/pkg"
+)
+
 type Foo struct {
 	id int
 }
@@ -9,50 +14,21 @@ func (f *Foo) Do() {
 }
 
 func main() {
-	foo := Foo{id: 2}
-	foo.Do()
-	foo.Do()
-	foo.Do()
+	unpacker := us.New()
+	printout(&unpacker, "a4bc2d5e")
+	printout(&unpacker, "abcd")
+	printout(&unpacker, "45")
+	printout(&unpacker, "qwe\\4\\5")
+	printout(&unpacker, "qwe\\45")
+	printout(&unpacker, "qwe\\\\5")
+	printout(&unpacker, "a10bc2d5e")
 }
 
-//func TestWhenRegularStringUnpackGot(t *testing.T) {
-//	val, err := DoUnpackString("a4bc2d5e")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "aaaabccddddde", val)
-//}
-//
-//func TestWhenUnpackableStringGot(t *testing.T) {
-//	val, err := DoUnpackString("abcd")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "abcd", val)
-//}
-//
-//func TestWhenWrongStringGot(t *testing.T) {
-//	_, err := DoUnpackString("45")
-//	assert.NotNil(t, err)
-//	assert.Equal(t, err.Error(), "wrong value, that is sucks")
-//}
-//
-//func TestWhenEscapedUnpackableStringGot(t *testing.T) {
-//	v, err := DoUnpackString("qwe\\4\\5")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "qwe45", v)
-//}
-//
-//func TestWhenEscapedRegularStringGot(t *testing.T) {
-//	v, err := DoUnpackString("qwe\\45")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "qwe44444", v)
-//}
-//
-//func TestWhenDoubleEscapedStringGot(t *testing.T) {
-//	v, err := DoUnpackString("qwe\\\\5")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "qwe\\\\\\\\\\", v)
-//}
-//
-//func TestWhenRegularLongStringUnpackGot(t *testing.T) {
-//	val, err := DoUnpackString("a10bc2d5e")
-//	assert.Nil(t, err)
-//	assert.Equal(t, "aaaaaaaaaabccddddde", val)
-//}
+func printout(unpacker *us.StringUnpacker, testString string) {
+	result, err := unpacker.Do(testString)
+	if err != nil {
+		fmt.Printf("Input %v has led to the exception: \n", err.Error())
+	} else {
+		fmt.Printf("Input: %v | Output: %v \n", testString, result)
+	}
+}

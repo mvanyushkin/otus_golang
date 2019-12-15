@@ -17,7 +17,7 @@ func New() StringUnpacker {
 	return StringUnpacker{}
 }
 
-func (_this *StringUnpacker) DoUnpackString(input string) (string, error) {
+func (_this *StringUnpacker) Do(input string) (string, error) {
 	_, err := strconv.Atoi(input)
 	if err == nil {
 		return "", errors.New("wrong value, that is sucks")
@@ -67,7 +67,9 @@ func (_this *StringUnpacker) DoUnpackString(input string) (string, error) {
 		}
 	}
 
-	return _this.output, nil
+	result := _this.output
+	_this.clearState()
+	return result, nil
 }
 
 func (_this *StringUnpacker) repeatLastSymbol() {
@@ -79,4 +81,11 @@ func (_this *StringUnpacker) repeatLastSymbol() {
 
 func (_this *StringUnpacker) flushLastSymbol() {
 	_this.output += string(_this.lastSymbolRune)
+}
+
+func (_this *StringUnpacker) clearState() {
+	_this.lastSymbolRune = 0
+	_this.hasStartedEscapedSequence = false
+	_this.rawRepeatCount = ""
+	_this.output = ""
 }
