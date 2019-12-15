@@ -6,11 +6,18 @@ import (
 	"unicode"
 )
 
-func DoUnpackString(input string) (string, error) {
-	var lastSymbolRune rune
-	var hasStartedEscapedSequence = false
-	var rawRepeatCount string
-	var output = ""
+type StringUnpacker struct {
+	lastSymbolRune            rune
+	hasStartedEscapedSequence bool
+	rawRepeatCount            string
+	output                    string
+}
+
+func New() StringUnpacker {
+	return StringUnpacker{}
+}
+
+func (_this *StringUnpacker) DoUnpackString(input string) (string, error) {
 	_, err := strconv.Atoi(input)
 	if err == nil {
 		return "", errors.New("wrong value, that is sucks")
@@ -18,55 +25,58 @@ func DoUnpackString(input string) (string, error) {
 
 	for index, v := range input {
 		// It covers the first iteration
-		if lastSymbolRune == 0 {
-			lastSymbolRune = v
+		if _this.lastSymbolRune == 0 {
+			_this.lastSymbolRune = v
 			continue
 		}
 
 		if string(v) == "\\" {
-			if hasStartedEscapedSequence {
-				output += string(lastSymbolRune)
-				hasStartedEscapedSequence = false
-				lastSymbolRune = v
+			if _this.hasStartedEscapedSequence {
+				_this.flushLastSymbol()
+				_this.hasStartedEscapedSequence = false
+				_this.lastSymbolRune = v
 				continue
 			} else {
-				hasStartedEscapedSequence = true
+				_this.hasStartedEscapedSequence = true
 				continue
 			}
 		}
 
-		if unicode.IsNumber(v) && !hasStartedEscapedSequence {
-			rawRepeatCount += string(v)
+		if unicode.IsNumber(v) && !_this.hasStartedEscapedSequence {
+			_this.rawRepeatCount += string(v)
 			if index == len(input)-1 {
-				repeatString, _ := strconv.Atoi(rawRepeatCount)
-				for repeatIndex := 0; repeatIndex < repeatString; repeatIndex++ {
-					output += string(lastSymbolRune)
-				}
+				_this.repeatLastSymbol()
 			}
 		}
 
-		if hasStartedEscapedSequence || !unicode.IsNumber(v) {
-			if rawRepeatCount == "" {
-				output += string(lastSymbolRune)
+		if _this.hasStartedEscapedSequence || !unicode.IsNumber(v) {
+			if _this.rawRepeatCount == "" {
+				_this.flushLastSymbol()
 			} else {
-
-				repeatString, _ := strconv.Atoi(rawRepeatCount)
-				for repeatIndex := 0; repeatIndex < repeatString; repeatIndex++ {
-					output += string(lastSymbolRune)
-				}
-
-				rawRepeatCount = ""
+				_this.repeatLastSymbol()
+				_this.rawRepeatCount = ""
 			}
 
 			if index == len(input)-1 {
-				output += string(v)
+				_this.output += string(v)
 				continue
 			}
 
-			lastSymbolRune = v
-			hasStartedEscapedSequence = false
+			_this.lastSymbolRune = v
+			_this.hasStartedEscapedSequence = false
 		}
 	}
 
-	return output, nil
+	return _this.output, nil
+}
+
+func (_this *StringUnpacker) repeatLastSymbol() {
+	repeatString, _ := strconv.Atoi(_this.rawRepeatCount)
+	for repeatIndex := 0; repeatIndex < repeatString; repeatIndex++ {
+		_this.output += string(_this.lastSymbolRune)
+	}
+}
+
+func (_this *StringUnpacker) flushLastSymbol() {
+	_this.output += string(_this.lastSymbolRune)
 }

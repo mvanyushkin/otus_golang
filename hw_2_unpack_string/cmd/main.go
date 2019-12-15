@@ -1,7 +1,18 @@
 package main
 
-func main() {
+type Foo struct {
+	id int
+}
 
+func (f *Foo) Do() {
+	f.id = 8
+}
+
+func main() {
+	foo := Foo{id: 2}
+	foo.Do()
+	foo.Do()
+	foo.Do()
 }
 
 //func TestWhenRegularStringUnpackGot(t *testing.T) {
