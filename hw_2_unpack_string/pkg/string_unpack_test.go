@@ -37,8 +37,8 @@ func TestWhenEscapedRegularStringGot(t *testing.T) {
 
 func TestWhenDoubleEscapedStringGot(t *testing.T) {
 	v, err := DoUnpackString("qwe\\\\5")
-	assert.NotNil(t, err)
-	assert.Equal(t, "qwe\\\\", v)
+	assert.Nil(t, err)
+	assert.Equal(t, "qwe\\\\\\\\\\", v)
 }
 
 func TestWhenRegularLongStringUnpackGot(t *testing.T) {

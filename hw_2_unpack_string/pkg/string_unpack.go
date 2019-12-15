@@ -24,8 +24,15 @@ func DoUnpackString(input string) (string, error) {
 		}
 
 		if string(v) == "\\" {
-			hasStartedEscapedSequence = true
-			continue
+			if hasStartedEscapedSequence {
+				output += string(lastSymbolRune)
+				hasStartedEscapedSequence = false
+				lastSymbolRune = v
+				continue
+			} else {
+				hasStartedEscapedSequence = true
+				continue
+			}
 		}
 
 		if unicode.IsNumber(v) && !hasStartedEscapedSequence {
