@@ -23,8 +23,14 @@ func TestWhenWrongStringGot(t *testing.T) {
 	assert.Equal(t, err.Error(), "wrong value, that is sucks")
 }
 
-func TestWhenEscapedStringGot(t *testing.T) {
+func TestWhenEscapedUnpackableStringGot(t *testing.T) {
 	v, err := DoUnpackString("qwe\\4\\5")
+	assert.Nil(t, err)
+	assert.Equal(t, "qwe45", v)
+}
+
+func TestWhenEscapedRegularStringGot(t *testing.T) {
+	v, err := DoUnpackString("qwe\\45")
 	assert.Nil(t, err)
 	assert.Equal(t, "qwe44444", v)
 }

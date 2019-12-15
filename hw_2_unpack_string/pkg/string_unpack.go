@@ -7,7 +7,8 @@ import (
 )
 
 func DoUnpackString(input string) (string, error) {
-	var repeatableRune rune
+	var lastSymbolRune rune
+	var hasStartedEscapedSequence = false
 	var rawRepeatCount string
 	var output = ""
 	_, err := strconv.Atoi(input)
@@ -17,22 +18,34 @@ func DoUnpackString(input string) (string, error) {
 
 	for index, v := range input {
 		// It covers the first iteration
-		if repeatableRune == 0 {
-			repeatableRune = v
+		if lastSymbolRune == 0 {
+			lastSymbolRune = v
 			continue
 		}
 
-		if unicode.IsNumber(v) {
-			rawRepeatCount += string(v)
+		if string(v) == "\\" {
+			hasStartedEscapedSequence = true
+			continue
 		}
 
-		if !unicode.IsNumber(v) {
-			if rawRepeatCount == "" {
-				output += string(repeatableRune)
-			} else {
+		if unicode.IsNumber(v) && !hasStartedEscapedSequence {
+			rawRepeatCount += string(v)
+			if index == len(input)-1 {
 				repeatString, _ := strconv.Atoi(rawRepeatCount)
 				for repeatIndex := 0; repeatIndex < repeatString; repeatIndex++ {
-					output += string(repeatableRune)
+					output += string(lastSymbolRune)
+				}
+			}
+		}
+
+		if hasStartedEscapedSequence || !unicode.IsNumber(v) {
+			if rawRepeatCount == "" {
+				output += string(lastSymbolRune)
+			} else {
+
+				repeatString, _ := strconv.Atoi(rawRepeatCount)
+				for repeatIndex := 0; repeatIndex < repeatString; repeatIndex++ {
+					output += string(lastSymbolRune)
 				}
 
 				rawRepeatCount = ""
@@ -43,7 +56,8 @@ func DoUnpackString(input string) (string, error) {
 				continue
 			}
 
-			repeatableRune = v
+			lastSymbolRune = v
+			hasStartedEscapedSequence = false
 		}
 	}
 
