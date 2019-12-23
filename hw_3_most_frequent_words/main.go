@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mvanyushkin/otus_golang/tree/master/hw_3_most_frequent_words/textanalyzer"
+	"github.com/mvanyushkin/otus_golang/hw_3_most_frequent_words/textanalyzer"
 )
 
 func main() {
