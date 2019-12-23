@@ -1,4 +1,4 @@
-module mvanyushkin/otus_golang/hw_3_most_frequent_words
+module github.com/mvanyushkin/otus_golang/hw_3_most_frequent_words
 
 go 1.13
 
